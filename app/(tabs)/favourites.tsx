@@ -1,13 +1,39 @@
-import React, { createContext, useState } from "react";
+import React, { useContext } from "react";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+// import { FavoritesContext } from "../contexts/FavoritesContext";
 
-export const FavoritesContext = createContext();
-
-export const FavoritesProvider = ({ children }) => {
-  const [favorites, setFavorites] = useState([]);
-
+export default function FavoritesScreen() {
+//   const { favorites } = useContext(FavoritesContext);
+const favorites = [
+    {
+        id: 1,
+     title: "Movie 1"
+    },
+    {
+        id: 2,
+        title: "Movie 2"
+    }    
+];
   return (
-    <FavoritesContext.Provider value={{ favorites, setFavorites }}>
-      {children}
-    </FavoritesContext.Provider>
+    <View style={styles.container}>
+      <FlatList
+        data={favorites}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <Text style={styles.title}>{item.title}</Text>
+        )}
+      />
+    </View>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 12,
+  },
+});

@@ -8,6 +8,7 @@ import {
   Text,
   View,
   Image,
+  Pressable,
 } from "react-native";
 
 const API_KEY = "1ef7a743667667402127014c842e67ed";
@@ -16,17 +17,17 @@ export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const searchMovies = async () => {
     if (!searchQuery) return;
-
+  
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/550?api_key=${API_KEY}&query=${encodeURIComponent(
+        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
           searchQuery
         )}`
       );
@@ -37,12 +38,11 @@ export default function SearchScreen() {
         setMovies([]);
       }
     } catch (err) {
-      setError("Erro ao buscar filmes. Tente novamente.");
+      setError(() => "Erro ao buscar filmes. Tente novamente.");
     } finally {
       setLoading(false);
     }
-  };
-
+  };  
   return (
     <SafeAreaView style={styles.container}>
       <TextInput
@@ -51,7 +51,11 @@ export default function SearchScreen() {
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-      <Button title="Pesquisar" onPress={searchMovies} />
+      <View>
+        <Pressable style={styles.button} onPress={searchMovies}>
+          <Text>Pesquisar</Text>
+        </Pressable>
+      </View>
 
       {loading && <Text>Carregando...</Text>}
       {error && <Text style={styles.error}>{error}</Text>}
@@ -59,7 +63,7 @@ export default function SearchScreen() {
       <FlatList
         data={movies}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: any }) => (
           <View style={styles.movieItem}>
             {item.poster_path ? (
               <Image
@@ -84,7 +88,7 @@ export default function SearchScreen() {
             </View>
           </View>
         )}
-        ListEmptyComponent={
+        ListEmptyComponent={() =>
           !loading && <Text>Nenhum filme encontrado. Tente outra busca.</Text>
         }
       />
@@ -92,8 +96,7 @@ export default function SearchScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
+const styles = StyleSheet.create({  container: {
     flex: 1,
     padding: 16,
     backgroundColor: "#fff",
@@ -104,6 +107,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+    borderRadius: 4,
+  },
+  button: {
+    marginBottom: 20,
+    backgroundColor: "lime",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
     borderRadius: 4,
   },
   movieItem: {
