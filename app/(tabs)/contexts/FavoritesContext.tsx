@@ -1,25 +1,50 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, ReactNode, useContext } from "react";
 
-export const FavoritesContext = createContext<{
-  favorites: any[];
-  addFavorite: (movie: any) => void;
+interface Movie {
+  id: number;
+  title: string;
+  poster_path?: string;
+  release_date?: string;
+  overview?: string;
+}
+
+interface FavoritesContextData {
+  favorites: Movie[];
+  addFavorite: (movie: Movie) => void;
   removeFavorite: (movieId: number) => void;
-}>({
+}
+
+export const FavoritesContext = createContext<FavoritesContextData>({
   favorites: [],
   addFavorite: () => {},
-  removeFavorite: () => {}
+  removeFavorite: () => {},
 });
 
-export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [favorites, setFavorites] = useState<any[]>([]);
+export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
+  const [favorites, setFavorites] = useState<Movie[]>([]);
 
-  const addFavorite = (movie: any) => setFavorites([...favorites, movie]);
-  const removeFavorite = (movieId: number) => setFavorites(favorites.filter(m => m.id !== movieId));
+  const addFavorite = (movie: Movie) => {
+    setFavorites((prevFavorites) => {
+      if (!prevFavorites.some((fav) => fav.id === movie.id)) {
+        return [...prevFavorites, movie];
+      }
+      return prevFavorites;
+    });
+  };
+
+  const removeFavorite = (movieId: number) => {
+    setFavorites((prevFavorites) =>
+      prevFavorites.filter((movie) => movie.id !== movieId)
+    );
+  };
 
   return (
-    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite }}>
+    <FavoritesContext.Provider
+      value={{ favorites, addFavorite, removeFavorite }}
+    >
       {children}
     </FavoritesContext.Provider>
   );
-
 };
+
+export const useFavorites = () => useContext(FavoritesContext);

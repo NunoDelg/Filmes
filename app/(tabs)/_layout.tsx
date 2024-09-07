@@ -1,19 +1,27 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import React from "react";
+import { Tabs } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { FavoritesProvider } from "../(tabs)/contexts/FavoritesContext";
+import {
+  ThemeProvider,
+  useThemeContext,
+} from "../(tabs)/contexts/ThemeContext";
 
-export default function TabLayout() {
+// Componente para aplicar o tema
+const ThemedTabs: React.FC = () => {
+  const { theme } = useThemeContext();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'lime',
-        tabBarInactiveTintColor: 'white',
+        tabBarActiveTintColor: theme === "light" ? "lime" : "black",
+        tabBarInactiveTintColor: theme === "light" ? "white" : "black",
         tabBarStyle: {
-          backgroundColor: 'black',
+          backgroundColor: theme === "light" ? "black" : "gray",
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          color: 'lime',
+          color: theme === "light" ? "lime" : "cyan",
         },
         tabBarIconStyle: {
           marginBottom: 1,
@@ -24,7 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: "Home",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="home" color={color} />
           ),
@@ -33,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
+          title: "Search",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="search" color={color} />
           ),
@@ -42,7 +50,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="favourites"
         options={{
-          title: 'Favourites',
+          title: "Favourites",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="star" color={color} />
           ),
@@ -51,7 +59,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="movies"
         options={{
-          title: 'Movies',
+          title: "MoviesDetails",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="film" color={color} />
           ),
@@ -60,12 +68,22 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: "Settings",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="gear" color={color} />
           ),
         }}
       />
     </Tabs>
+  );
+};
+
+export default function TabLayout() {
+  return (
+    <FavoritesProvider>
+      <ThemeProvider>
+        <ThemedTabs />
+      </ThemeProvider>
+    </FavoritesProvider>
   );
 }

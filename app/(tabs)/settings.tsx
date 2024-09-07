@@ -1,22 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import * as SecureStore from "expo-secure-store";
+import { useThemeContext } from "../(tabs)/contexts/ThemeContext"; 
 
 export default function SettingsScreen() {
-  const [theme, setTheme] = useState("light");
+  const { theme, toggleTheme } = useThemeContext(); 
 
   useEffect(() => {
     const loadSettings = async () => {
       const storedTheme = await SecureStore.getItemAsync("theme");
-      if (storedTheme) setTheme(storedTheme);
+      if (storedTheme) {
+        // Aplicar o tema armazenado
+        setTheme(storedTheme);
+      }
     };
+
     loadSettings();
   }, []);
 
-  const toggleTheme = async () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    await SecureStore.setItemAsync("theme", newTheme);
+  const setTheme = async (storedTheme: string) => {
+    if (storedTheme !== theme) {
+      // Define o tema atual com base no armazenado
+      await toggleTheme(); 
+    }
   };
 
   return (
